@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/felipedias-dev/fullcycle-go-expert-upload-aws-s3/configs"
 )
 
 var (
@@ -17,12 +18,16 @@ var (
 )
 
 func init() {
+	config, err := configs.LoadConfig(".")
+	if err != nil {
+		panic(err)
+	}
 	sess, err := session.NewSession(
 		&aws.Config{
-			Region: aws.String("us-east-1"),
+			Region: aws.String(config.AwsRegion),
 			Credentials: credentials.NewStaticCredentials(
-				"AGHER123444YDHIUDIJ",
-				"wHTYD537shd6wjkhj",
+				config.AwsKey,
+				config.AwsSecret,
 				"",
 			),
 		},
@@ -31,7 +36,7 @@ func init() {
 		panic(err)
 	}
 	s3Client = s3.New(sess)
-	s3Bucket = "go-expert-s3-uploader"
+	s3Bucket = config.S3Bucket
 }
 
 func main() {
